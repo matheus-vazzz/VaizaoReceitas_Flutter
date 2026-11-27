@@ -1,6 +1,9 @@
+import 'package:vaizao_receitas/comp/ImagemReceita.dart';
 import 'package:vaizao_receitas/dados/Cores.dart';
+import 'package:vaizao_receitas/dados/ListaFavoritos.dart';
 import 'package:vaizao_receitas/dados/Receita.dart';
 import 'package:vaizao_receitas/telas/DetalheReceita.dart';
+
 import 'package:flutter/material.dart';
 
 class CardReceita extends StatelessWidget {
@@ -23,20 +26,7 @@ class CardReceita extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                  color: bege,
-                  borderRadius: BorderRadius.circular(12)
-              ),
-              child: Center(
-                child: Text(
-                  receita.tipo,
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: vermelho),
-                ),
-              ),
-            ),
+            ImagemReceita(receita: receita, largura: 80, altura: 80),
             SizedBox(width: 14),
             Expanded(
               child: Column(
@@ -44,10 +34,12 @@ class CardReceita extends StatelessWidget {
                 children: [
                   Text(
                     receita.nome,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: carvao),
                   ),
                   SizedBox(height: 6),
-                  Text("${receita.tempo} • ${receita.dificuldade}", style: TextStyle(color: cinza)),
+                  Text("${receita.textoTempo()} • ${receita.textoDificuldade()}", style: TextStyle(fontSize: 13, color: cinza)),
                   SizedBox(height: 6),
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -56,14 +48,22 @@ class CardReceita extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10)
                     ),
                     child: Text(
-                      receita.nota,
+                      receita.textoNota(),
                       style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: carvao),
                     ),
                   ),
                 ],
               ),
             ),
-            Icon(receita.favorito ? Icons.favorite : Icons.favorite_border, color: vermelho),
+            ValueListenableBuilder<int>(
+              valueListenable: favoritosAlterados,
+              builder: (context, valor, filho){
+                return IconButton(
+                  onPressed: () => alternarFavorito(receita),
+                  icon: Icon(ehFavorito(receita) ? Icons.favorite : Icons.favorite_border, color: vermelho),
+                );
+              },
+            ),
           ],
         ),
       ),
